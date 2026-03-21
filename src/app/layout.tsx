@@ -28,7 +28,8 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} min-h-screen flex flex-col antialiased bg-white dark:bg-zinc-950 text-zinc-900 dark:text-zinc-50 transition-colors duration-300`}
+        suppressHydrationWarning
+        className={`${geistSans.variable} ${geistMono.variable} text-lg min-h-screen flex flex-col antialiased bg-white dark:bg-zinc-950 text-zinc-900 dark:text-zinc-50 transition-colors duration-300`}
       >
         <Providers>
           <Navbar />

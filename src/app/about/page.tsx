@@ -4,7 +4,7 @@ import Link from "next/link";
 import { Wifi, Sparkles, Globe, Code2, Paintbrush, Map, Cloud, Cpu, ArrowRight, Github, Linkedin, Mail } from "lucide-react";
 import Image from "next/image";
 
-export default function AboutPage() {
+function AboutContent() {
   return (
     <div className="min-h-screen bg-zinc-50 dark:bg-[#131315] py-16 px-4 sm:px-6 lg:px-8">
       <div className="max-w-5xl mx-auto space-y-24">
@@ -110,13 +110,13 @@ export default function AboutPage() {
               </p>
               
               <div className="flex items-center gap-3">
-                <a href="#" className="w-12 h-12 rounded-full bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 flex items-center justify-center text-zinc-600 dark:text-zinc-400 hover:bg-zinc-900 hover:text-white dark:hover:bg-white dark:hover:text-zinc-900 transition-all hover:-translate-y-1">
+                <a href="https://github.com/Krrish0221" target="_blank" rel="noopener noreferrer" className="w-12 h-12 rounded-full bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 flex items-center justify-center text-zinc-600 dark:text-zinc-400 hover:bg-zinc-900 hover:text-white dark:hover:bg-white dark:hover:text-zinc-900 transition-all hover:-translate-y-1">
                   <Github size={20} />
                 </a>
-                <a href="#" className="w-12 h-12 rounded-full bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 flex items-center justify-center text-zinc-600 dark:text-zinc-400 hover:bg-blue-600 hover:text-white hover:border-blue-600 transition-all hover:-translate-y-1">
+                <a href="https://www.linkedin.com/in/krishprajapati02102007" target="_blank" rel="noopener noreferrer" className="w-12 h-12 rounded-full bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 flex items-center justify-center text-zinc-600 dark:text-zinc-400 hover:bg-blue-600 hover:text-white hover:border-blue-600 transition-all hover:-translate-y-1">
                   <Linkedin size={20} />
                 </a>
-                <a href="#" className="w-12 h-12 rounded-full bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 flex items-center justify-center text-zinc-600 dark:text-zinc-400 hover:bg-red-500 hover:text-white hover:border-red-500 transition-all hover:-translate-y-1">
+                <a href="mailto:krishprajapati2611@gmail.com" className="w-12 h-12 rounded-full bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 flex items-center justify-center text-zinc-600 dark:text-zinc-400 hover:bg-red-500 hover:text-white hover:border-red-500 transition-all hover:-translate-y-1">
                   <Mail size={20} />
                 </a>
               </div>
@@ -140,5 +140,15 @@ export default function AboutPage() {
 
       </div>
     </div>
+  );
+}
+
+import ProtectedRoute from "@/components/ProtectedRoute";
+
+export default function AboutPage() {
+  return (
+    <ProtectedRoute>
+      <AboutContent />
+    </ProtectedRoute>
   );
 }

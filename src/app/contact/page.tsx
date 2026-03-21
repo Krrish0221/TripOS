@@ -1,4 +1,4 @@
-export default function ContactPage() {
+function ContactContent() {
   return (
     <div className="container mx-auto px-4 py-24 text-center">
       <h1 className="text-4xl font-bold mb-6">Contact Us</h1>
@@ -12,5 +12,15 @@ export default function ContactPage() {
         </button>
       </div>
     </div>
+  );
+}
+
+import ProtectedRoute from "@/components/ProtectedRoute";
+
+export default function ContactPage() {
+  return (
+    <ProtectedRoute>
+      <ContactContent />
+    </ProtectedRoute>
   );
 }

@@ -11,7 +11,7 @@ interface WeatherData {
   condition: string;
 }
 
-export default function FeaturesPage() {
+function FeaturesContent() {
   const { isAuthenticated, openAuthModal } = useAuth();
 
   const [searchInput, setSearchInput] = useState("");
@@ -504,5 +504,15 @@ export default function FeaturesPage() {
 
       </div>
     </div>
+  );
+}
+
+import ProtectedRoute from "@/components/ProtectedRoute";
+
+export default function FeaturesPage() {
+  return (
+    <ProtectedRoute>
+      <FeaturesContent />
+    </ProtectedRoute>
   );
 }

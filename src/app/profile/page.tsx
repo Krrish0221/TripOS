@@ -6,7 +6,7 @@ import { User, MapPin, Compass, Settings, History, LogOut, Heart, FileText, Sun,
 import Link from "next/link";
 import Image from "next/image";
 
-export default function ProfilePage() {
+function ProfileContent() {
   const { theme, setTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -209,5 +209,15 @@ export default function ProfilePage() {
 
       </div>
     </div>
+  );
+}
+
+import ProtectedRoute from "@/components/ProtectedRoute";
+
+export default function ProfilePage() {
+  return (
+    <ProtectedRoute>
+      <ProfileContent />
+    </ProtectedRoute>
   );
 }

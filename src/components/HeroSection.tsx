@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import Link from "next/link";
 import { useLanguage } from "@/context/LanguageContext";
 
 export default function HeroSection() {
@@ -28,9 +29,9 @@ export default function HeroSection() {
         <p className="text-lg md:text-2xl text-white/90 font-medium mb-10 drop-shadow-md max-w-2xl mx-auto">
           {t("heroSubtitle")}
         </p>
-        <button className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-4 rounded-full font-bold text-lg transition-all transform hover:scale-105 shadow-xl hover:shadow-blue-500/25">
+        <Link href="/features" className="inline-block bg-blue-600 hover:bg-blue-700 text-white px-8 py-4 rounded-full font-bold text-lg transition-all transform hover:scale-105 shadow-xl hover:shadow-blue-500/25">
           {t("heroCta")}
-        </button>
+        </Link>
       </div>
     </section>
   );

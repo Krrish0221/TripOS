@@ -1,8 +1,9 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Search, Map as MapIcon, Cloud, Wifi, WifiOff, Save, Check, Thermometer, Wind, Droplets, Sparkles } from "lucide-react";
-import { generateTravelGuide } from "@/actions/travel";
+import { Search, Map as MapIcon, Cloud, Wifi, WifiOff, Save, Check, Thermometer, Wind, Droplets, Sparkles, AlertCircle, Plane, Train, Car, Plus, MapPin, Compass } from "lucide-react";
+import { generateTravelGuide, generateTransitEstimates, generateTopSpots } from "@/actions/travel";
+import { useAuth } from "@/context/AuthContext";
 
 interface WeatherData {
   temperature: number;
@@ -11,7 +12,11 @@ interface WeatherData {
 }
 
 export default function FeaturesPage() {
+  const { isAuthenticated, openAuthModal } = useAuth();
+  
   const [searchInput, setSearchInput] = useState("");
+  const [searchOrigin, setSearchOrigin] = useState("New Delhi");
+  const [origin, setOrigin] = useState("New Delhi");
   const [location, setLocation] = useState("Srinagar");
   const [weather, setWeather] = useState<WeatherData | null>(null);
   const [loading, setLoading] = useState(false);
@@ -19,9 +24,19 @@ export default function FeaturesPage() {
   // AI Insights State
   const [aiInsights, setAiInsights] = useState("");
   const [aiLoading, setAiLoading] = useState(false);
+  const [activeTheme, setActiveTheme] = useState("general highlights");
+
+  // Advanced Routing & Spots
+  const [transitData, setTransitData] = useState<any>(null);
+  const [transitLoading, setTransitLoading] = useState(false);
+  const [topSpots, setTopSpots] = useState<any[]>([]);
+  const [spotsLoading, setSpotsLoading] = useState(false);
+  const [savedSpots, setSavedSpots] = useState<string[]>([]);
 
   // Accessibility & DB features
   const [dataSaver, setDataSaver] = useState(false);
+  const [wikiSummary, setWikiSummary] = useState("");
+  
   const [isSaved, setIsSaved] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
 
@@ -29,8 +44,43 @@ export default function FeaturesPage() {
     e.preventDefault();
     if (!searchInput.trim()) return;
     setLocation(searchInput.trim());
+    if (searchOrigin.trim()) setOrigin(searchOrigin.trim());
     setIsSaved(false);
     setErrorMsg("");
+  };
+
+  const handleSaveToItinerary = () => {
+    if (!isAuthenticated) {
+      openAuthModal();
+      return;
+    }
+    
+    // Simulate DB Push
+    const storedObject = {
+      destination: location,
+      temp: weather?.temperature ? `${weather.temperature}°C` : "Unknown",
+      ai_tips: aiInsights.split('\n').filter(l => l.trim() !== ""),
+      savedAt: new Date().toISOString()
+    };
+    
+    console.log("Pushing to Mock DB:", storedObject);
+    // Pretend Network Request...
+    setTimeout(() => setIsSaved(true), 300);
+  };
+
+  const handleAiThemeClick = async (theme: string) => {
+    setActiveTheme(theme);
+    setAiLoading(true);
+    setAiInsights("");
+    try {
+      const insights = await generateTravelGuide(location, theme);
+      setAiInsights(insights);
+    } catch (err) {
+      console.error(err);
+      setAiInsights("Failed to load AI insights at this time.");
+    } finally {
+      setAiLoading(false);
+    }
   };
 
   useEffect(() => {
@@ -39,6 +89,7 @@ export default function FeaturesPage() {
       setAiLoading(true);
       setErrorMsg("");
       setAiInsights("");
+      setWikiSummary("");
 
       try {
         // 1. Geocode the location
@@ -61,7 +112,6 @@ export default function FeaturesPage() {
         const weatherRes = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current_weather=true`);
         const weatherData = await weatherRes.json();
 
-        // Map Open-Meteo WMO code
         const code = weatherData.current_weather.weathercode;
         let conditionStr = "Clear";
         if (code > 0 && code <= 3) conditionStr = "Partly Cloudy";
@@ -76,11 +126,35 @@ export default function FeaturesPage() {
           condition: conditionStr,
         });
 
-        setLoading(false); // Weather is done loading
-
-        // 3. Fetch AI Insights securely using Next.js Server Action
+        // 3. Fetch Wikipedia Summary (Data Saver Backend logic)
         try {
-          const insights = await generateTravelGuide(formattedLocation);
+          const wikiRes = await fetch(`https://en.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(name)}`);
+          if (wikiRes.ok) {
+            const wikiData = await wikiRes.json();
+            setWikiSummary(wikiData.extract || "No quick text summary available for this region.");
+          }
+        } catch (e) {
+          console.error("Wiki fetch failed", e);
+        }
+
+        setLoading(false);
+
+        // Fetch AI Transit & Spots concurrently without blocking Weather
+        setTransitLoading(true);
+        setSpotsLoading(true);
+        
+        const orgForAi = searchOrigin ? searchOrigin.trim() : "New Delhi";
+        generateTransitEstimates(orgForAi, formattedLocation)
+          .then(res => { setTransitData(res); setTransitLoading(false); })
+          .catch(() => setTransitLoading(false));
+
+        generateTopSpots(formattedLocation)
+          .then(res => { setTopSpots(res || []); setSpotsLoading(false); })
+          .catch(() => setSpotsLoading(false));
+
+        // 4. Fetch AI Insights securely using Next.js Server Action
+        try {
+          const insights = await generateTravelGuide(formattedLocation, activeTheme);
           setAiInsights(insights);
         } catch (aiErr) {
           console.error(aiErr);
@@ -98,7 +172,7 @@ export default function FeaturesPage() {
     }
 
     fetchAllData();
-  }, [location, searchInput]);
+  }, [location, searchInput]); // activeTheme is intentionally NOT in dependency array for the main fetch to avoid double-loading.
 
   return (
     <div className="min-h-screen bg-zinc-50 dark:bg-[#131315] py-12 px-4 sm:px-6 lg:px-8">
@@ -113,18 +187,30 @@ export default function FeaturesPage() {
             Discover local spots, check live conditions, get AI recommendations, and save itineraries directly to your profile.
           </p>
           
-          <form onSubmit={handleSearch} className="max-w-xl mx-auto mt-8 relative flex items-center shadow-lg rounded-full overflow-hidden border border-zinc-200 dark:border-zinc-800">
-            <Search className="absolute left-4 text-zinc-400" size={20} />
-            <input 
-              type="text" 
-              placeholder="Where do you want to go?" 
-              value={searchInput}
-              onChange={(e) => setSearchInput(e.target.value)}
-              className="w-full pl-12 pr-32 py-4 bg-white dark:bg-zinc-900 text-zinc-900 dark:text-white outline-none font-medium placeholder-zinc-400"
-            />
-            <button type="submit" className="absolute right-2 px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-full transition-colors">
-              Search
-            </button>
+          <form onSubmit={handleSearch} className="max-w-3xl mx-auto mt-8 relative flex flex-col md:flex-row items-center shadow-lg rounded-[2rem] md:rounded-full overflow-hidden border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 divide-y md:divide-y-0 md:divide-x dark:divide-zinc-800">
+            <div className="flex-1 w-full relative flex items-center">
+              <MapPin className="absolute left-4 text-zinc-400" size={20} />
+              <input 
+                type="text" 
+                placeholder="Origin (e.g. New Delhi)" 
+                value={searchOrigin}
+                onChange={(e) => setSearchOrigin(e.target.value)}
+                className="w-full pl-12 pr-4 py-4 bg-transparent text-zinc-900 dark:text-white outline-none font-medium placeholder-zinc-400"
+              />
+            </div>
+            <div className="flex-1 w-full relative flex items-center">
+              <Search className="absolute left-4 text-zinc-400" size={20} />
+              <input 
+                type="text" 
+                placeholder="Destination (e.g. Srinagar)" 
+                value={searchInput}
+                onChange={(e) => setSearchInput(e.target.value)}
+                className="w-full pl-12 pr-32 py-4 bg-transparent text-zinc-900 dark:text-white outline-none font-medium placeholder-zinc-400"
+              />
+              <button type="submit" className="absolute right-2 px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-full transition-colors">
+                Search
+              </button>
+            </div>
           </form>
         </div>
 
@@ -148,7 +234,7 @@ export default function FeaturesPage() {
           </div>
 
           <button 
-            onClick={() => setIsSaved(true)}
+            onClick={handleSaveToItinerary}
             disabled={isSaved || loading || !!errorMsg}
             className={`flex items-center gap-2 px-6 py-2 rounded-xl font-bold transition-colors text-sm flex-shrink-0 ${
               isSaved 
@@ -167,7 +253,7 @@ export default function FeaturesPage() {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           
           {/* Map Section */}
-          <div className="lg:col-span-2 bg-white dark:bg-zinc-900 rounded-[2rem] border border-zinc-200 dark:border-zinc-800 shadow-sm overflow-hidden flex flex-col min-h-[400px] h-[500px]">
+          <div className="lg:col-span-2 bg-white dark:bg-zinc-900 rounded-[2rem] border border-zinc-200 dark:border-zinc-800 shadow-sm overflow-hidden flex flex-col min-h-[400px] h-full">
             <div className="p-6 border-b border-zinc-100 dark:border-zinc-800/50 flex items-center justify-between bg-white dark:bg-zinc-900/50">
               <h2 className="text-xl font-bold text-zinc-900 dark:text-white flex items-center gap-2">
                 <MapIcon size={20} className="text-blue-500" />
@@ -175,14 +261,21 @@ export default function FeaturesPage() {
               </h2>
             </div>
             
-            <div className="flex-1 relative bg-zinc-100 dark:bg-zinc-950 flex items-center justify-center">
+            <div className="flex-1 relative bg-zinc-100 dark:bg-zinc-950 flex flex-col items-center justify-center p-8">
               {dataSaver ? (
-                <div className="text-center p-8">
-                  <WifiOff size={48} className="mx-auto text-zinc-400 mb-4 opacity-50" />
-                  <h3 className="text-xl font-bold text-zinc-700 dark:text-zinc-300 mb-2">Map Disabled</h3>
-                  <p className="text-zinc-500 dark:text-zinc-500 max-w-sm mx-auto">
-                    Data Saver mode is currently active. The interactive map tile load has been skipped to optimize performance on slow connections.
+                <div className="w-full max-w-2xl text-left bg-white dark:bg-zinc-900 p-8 rounded-3xl shadow-sm border border-zinc-200 dark:border-zinc-800">
+                  <div className="flex items-center gap-3 mb-4">
+                    <WifiOff size={24} className="text-green-600" />
+                    <h3 className="text-lg font-bold text-green-700 dark:text-green-500">Low-Bandwidth Mode Active</h3>
+                  </div>
+                  <p className="text-zinc-600 dark:text-zinc-400 leading-relaxed font-medium mb-4">
+                    Heavy map tiles have been disabled. Here is a lightweight geographical summary instead:
                   </p>
+                  <div className="bg-zinc-50 dark:bg-zinc-950 p-6 rounded-2xl border border-zinc-200 dark:border-zinc-800/50">
+                    <p className="text-zinc-900 dark:text-zinc-300 leading-relaxed font-serif">
+                      {wikiSummary || "Loading simplified regional data..."}
+                    </p>
+                  </div>
                 </div>
               ) : (
                 <iframe 
@@ -209,7 +302,6 @@ export default function FeaturesPage() {
               {loading ? (
                 <div className="flex-1 flex flex-col items-center justify-center text-zinc-400 min-h-[200px]">
                   <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-blue-600 mb-4"></div>
-                  <p className="font-medium animate-pulse">Fetching live data...</p>
                 </div>
               ) : errorMsg ? (
                 <div className="flex-1 flex items-center justify-center text-red-500 font-medium text-center p-4">
@@ -217,7 +309,7 @@ export default function FeaturesPage() {
                 </div>
               ) : weather ? (
                 <div className="flex-1 flex flex-col">
-                  <div className="flex items-center justify-center mb-8">
+                  <div className="flex items-center justify-center mb-6">
                     <div className="text-center">
                       <span className="text-7xl font-black text-zinc-900 dark:text-white tracking-tighter">
                         {Math.round(weather.temperature)}°
@@ -229,17 +321,17 @@ export default function FeaturesPage() {
                     </div>
                   </div>
 
-                  <div className="space-y-4 mt-auto">
+                  <div className="space-y-3 mt-auto">
                     <div className="flex justify-between items-center p-4 bg-zinc-50 dark:bg-zinc-950 rounded-2xl border border-zinc-100 dark:border-zinc-800/50">
-                      <div className="flex items-center gap-3 text-zinc-600 dark:text-zinc-400 font-medium">
-                        <Thermometer size={18} /> Temperature
+                      <div className="flex items-center gap-3 text-zinc-600 dark:text-zinc-400 font-medium text-sm">
+                        <Thermometer size={16} /> Temp
                       </div>
                       <span className="font-bold text-zinc-900 dark:text-white">{weather.temperature}° C</span>
                     </div>
                     
                     <div className="flex justify-between items-center p-4 bg-zinc-50 dark:bg-zinc-950 rounded-2xl border border-zinc-100 dark:border-zinc-800/50">
-                      <div className="flex items-center gap-3 text-zinc-600 dark:text-zinc-400 font-medium">
-                        <Wind size={18} /> Wind Speed
+                      <div className="flex items-center gap-3 text-zinc-600 dark:text-zinc-400 font-medium text-sm">
+                        <Wind size={16} /> Wind
                       </div>
                       <span className="font-bold text-zinc-900 dark:text-white">{weather.windspeed} km/h</span>
                     </div>
@@ -250,18 +342,36 @@ export default function FeaturesPage() {
 
             {/* AI Insights Section */}
             <div className="bg-gradient-to-br from-indigo-900 to-purple-900 rounded-[2rem] shadow-lg p-8 flex flex-col relative overflow-hidden">
-              {/* Decorative AI Glow */}
               <div className="absolute -top-10 -right-10 w-32 h-32 bg-purple-500 rounded-full blur-[50px] opacity-30"></div>
               
-              <h2 className="text-xl font-bold text-white mb-6 flex items-center gap-2 relative z-10">
-                <Sparkles size={20} className="text-purple-300" />
-                AI Groq Guide
-              </h2>
+              <div className="flex flex-col gap-4 mb-6 relative z-10">
+                <h2 className="text-xl font-bold text-white flex items-center gap-2">
+                  <Sparkles size={20} className="text-purple-300" />
+                  AI Groq Guide
+                </h2>
+                
+                {/* AI Theme Pills */}
+                <div className="flex flex-wrap gap-2">
+                  {["Adventure", "Relaxing", "Photography"].map((theme) => (
+                    <button
+                      key={theme}
+                      onClick={() => handleAiThemeClick(theme)}
+                      className={`text-[12px] px-3 py-1.5 rounded-full font-bold border transition-colors ${
+                        activeTheme === theme
+                          ? "bg-purple-500 border-purple-400 text-white"
+                          : "bg-indigo-900/50 border-indigo-700 text-purple-200 hover:bg-indigo-800"
+                      }`}
+                    >
+                      {theme}
+                    </button>
+                  ))}
+                </div>
+              </div>
 
               {aiLoading ? (
                 <div className="flex-1 flex flex-col items-center justify-center text-purple-200 min-h-[120px] relative z-10">
                   <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-purple-300 mb-3"></div>
-                  <p className="font-medium animate-pulse text-sm">Groq AI is analyzing {location.split(',')[0]}...</p>
+                  <p className="font-medium animate-pulse text-sm">AI is researching {activeTheme} in {location.split(',')[0]}...</p>
                 </div>
               ) : (
                 <div className="relative z-10 text-purple-50 font-medium leading-relaxed text-[15px]">
@@ -288,6 +398,101 @@ export default function FeaturesPage() {
 
           </div>
         </div>
+
+        {/* --- Advanced AI Data: Routing & Spots --- */}
+        <div className="space-y-12 pt-12 border-t border-zinc-200 dark:border-zinc-800">
+          
+          {/* Transit Estimates */}
+          <div>
+            <h2 className="text-2xl font-black text-zinc-900 dark:text-white mb-6 flex items-center gap-3">
+              <Compass className="text-blue-500" /> Routing: {origin} to {location.split(',')[0]}
+            </h2>
+            {transitLoading ? (
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6 animate-pulse">
+                 {[1,2,3].map(i => <div key={i} className="h-[200px] bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-[2rem]"></div>)}
+              </div>
+            ) : transitData ? (
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                {[
+                  { mode: "Flight", icon: <Plane size={24} />, data: transitData.flight, color: "text-sky-500", bg: "bg-sky-50 dark:bg-sky-950/30", link: "https://www.google.com/flights" },
+                  { mode: "Train", icon: <Train size={24} />, data: transitData.train, color: "text-amber-500", bg: "bg-amber-50 dark:bg-amber-950/30", link: "https://www.irctc.co.in" },
+                  { mode: "Road", icon: <Car size={24} />, data: transitData.road, color: "text-emerald-500", bg: "bg-emerald-50 dark:bg-emerald-950/30", link: "https://maps.google.com" }
+                ].map((t, idx) => (
+                  <div key={idx} className={`rounded-[2rem] border border-zinc-200 dark:border-zinc-800 shadow-sm p-6 ${t.bg} transition-transform hover:-translate-y-1 group relative overflow-hidden flex flex-col justify-between`}>
+                    <div>
+                      <div className="flex items-center justify-between mb-4 relative z-10">
+                        <div className={`p-3 rounded-full bg-white dark:bg-zinc-900 shadow-sm ${t.color}`}>
+                          {t.icon}
+                        </div>
+                        <span className="font-black text-lg text-zinc-900 dark:text-white">{t.mode}</span>
+                      </div>
+                      {t.data ? (
+                        <div className="space-y-1 relative z-10 mb-6">
+                          <p className="font-black text-zinc-900 dark:text-white flex items-baseline gap-2 text-2xl">
+                            {t.data.time || "N/A"}
+                          </p>
+                          <p className="text-zinc-600 dark:text-zinc-400 font-bold text-sm bg-white/50 dark:bg-zinc-900/50 inline-block px-3 py-1 rounded-lg">Est: {t.data.cost || "Cost varied"}</p>
+                        </div>
+                      ) : (
+                        <p className="text-zinc-500 relative z-10 mb-6">Route unavailable.</p>
+                      )}
+                    </div>
+                    
+                    <a href={t.link} target="_blank" rel="noreferrer" className="mt-auto block text-center w-full py-3 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl font-black text-sm text-zinc-900 dark:text-white shadow-sm hover:ring-2 hover:ring-blue-500 transition-all relative z-10">
+                      Book {t.mode}
+                    </a>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="text-zinc-500 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 p-6 rounded-2xl text-center font-medium">No routing data available.</div>
+            )}
+          </div>
+
+          {/* Top Spots Horizontal Scroll */}
+          <div>
+            <h2 className="text-2xl font-black text-zinc-900 dark:text-white mb-6 flex items-center gap-3">
+              <MapPin className="text-purple-500" /> Must-Visit Spots
+            </h2>
+            {spotsLoading ? (
+              <div className="flex gap-6 overflow-x-hidden animate-pulse">
+                 {[1,2,3,4].map(i => <div key={i} className="min-w-[280px] h-[200px] bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-[2rem]"></div>)}
+              </div>
+            ) : topSpots && topSpots.length > 0 ? (
+              <div className="flex gap-6 overflow-x-auto pb-6 snap-x snap-mandatory">
+                {topSpots.map((spot, idx) => {
+                   const isSpotSaved = savedSpots.includes(spot.title);
+                   return (
+                     <div key={idx} className="snap-start shrink-0 w-[280px] md:w-[320px] bg-white dark:bg-zinc-900 rounded-[2rem] border border-zinc-200 dark:border-zinc-800 shadow-sm p-6 flex flex-col justify-between hover:border-purple-500/50 transition-colors">
+                       <div>
+                         <div className="flex items-start justify-between gap-2 mb-4">
+                           <h3 className="font-black text-lg text-zinc-900 dark:text-white leading-tight pr-2">{spot.title}</h3>
+                           <button 
+                             onClick={() => {
+                               if (!isAuthenticated) return openAuthModal();
+                               if (!isSpotSaved) setSavedSpots(prev => [...prev, spot.title]);
+                             }}
+                             title={isSpotSaved ? "Saved to Profile!" : "Add to Itinerary"}
+                             className={`shrink-0 w-10 h-10 rounded-full flex items-center justify-center transition-all shadow-sm ${isSpotSaved ? "bg-green-500 text-white border border-green-600" : "bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400 hover:bg-blue-600 hover:text-white hover:scale-105 border border-zinc-200 dark:border-zinc-700"}`}
+                           >
+                             {isSpotSaved ? <Check size={18} strokeWidth={3} /> : <Plus size={18} strokeWidth={3} />}
+                           </button>
+                         </div>
+                         <div className="inline-block bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-400 font-bold text-xs px-3 py-1 rounded-lg mb-3">
+                           ⏱ {spot.time}
+                         </div>
+                         <p className="text-zinc-600 dark:text-zinc-400 text-sm font-medium leading-relaxed">{spot.desc}</p>
+                       </div>
+                     </div>
+                   );
+                })}
+              </div>
+            ) : (
+              <div className="text-zinc-500 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 p-6 rounded-2xl text-center font-medium">No top spots found.</div>
+            )}
+          </div>
+        </div>
+
       </div>
     </div>
   );

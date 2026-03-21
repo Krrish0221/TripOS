@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useLanguage } from "@/context/LanguageContext";
 import { useTheme } from "next-themes";
 import { Menu, X, Globe, Sun, Moon, User } from "lucide-react";
-import AuthModal from "./AuthModal";
+import { useAuth } from "@/context/AuthContext";
 
 export default function Navbar() {
   const { language, setLanguage, t } = useLanguage();
@@ -15,12 +15,10 @@ export default function Navbar() {
   useEffect(() => setMounted(true), []);
   
   const [isOpen, setIsOpen] = useState(false);
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
+  const { isAuthenticated, openAuthModal } = useAuth();
 
   // Toggle helpers
   const toggleTheme = () => setTheme(theme === "dark" ? "light" : "dark");
-  const handleLogout = () => setIsAuthenticated(false);
 
   return (
     <nav className="sticky top-0 z-50 w-full backdrop-blur-md bg-white/80 dark:bg-zinc-950/80 border-b border-zinc-200 dark:border-zinc-800 transition-colors duration-300">
@@ -68,7 +66,7 @@ export default function Navbar() {
               <span>{t("profile")}</span>
             </Link>
           ) : (
-            <button onClick={() => setIsAuthModalOpen(true)} className="flex items-center justify-center h-10 bg-zinc-900 text-white dark:bg-white dark:text-zinc-900 px-6 rounded-full font-bold hover:opacity-90 transition-opacity whitespace-nowrap shadow-sm text-sm">
+            <button onClick={openAuthModal} className="flex items-center justify-center h-10 bg-zinc-900 text-white dark:bg-white dark:text-zinc-900 px-6 rounded-full font-bold hover:opacity-90 transition-opacity whitespace-nowrap shadow-sm text-sm">
               {t("login")} / {t("signup")}
             </button>
           )}
@@ -116,22 +114,13 @@ export default function Navbar() {
                 <span>{t("profile")}</span>
               </Link>
             ) : (
-              <button onClick={() => { setIsAuthModalOpen(true); setIsOpen(false); }} className="w-full bg-zinc-900 text-white dark:bg-white dark:text-zinc-900 px-4 py-3 rounded-xl font-medium">
+              <button onClick={() => { openAuthModal(); setIsOpen(false); }} className="w-full bg-zinc-900 text-white dark:bg-white dark:text-zinc-900 px-4 py-3 rounded-xl font-medium">
                 {t("login")} / {t("signup")}
               </button>
             )}
           </div>
         </div>
       )}
-      
-      <AuthModal 
-        isOpen={isAuthModalOpen} 
-        onClose={() => setIsAuthModalOpen(false)} 
-        onLogin={() => {
-          setIsAuthenticated(true);
-          setIsAuthModalOpen(false);
-        }} 
-      />
     </nav>
   );
 }

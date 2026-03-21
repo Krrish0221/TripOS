@@ -51,6 +51,8 @@ export default function Navbar() {
             >
               <option value="en" className="text-zinc-900 bg-white">Eng</option>
               <option value="es" className="text-zinc-900 bg-white">Esp</option>
+              <option value="hi" className="text-zinc-900 bg-white">Hin</option>
+              <option value="gu" className="text-zinc-900 bg-white">Guj</option>
             </select>
           </div>
           
@@ -98,6 +100,8 @@ export default function Navbar() {
               >
                 <option value="en" className="text-zinc-900 bg-white">English</option>
                 <option value="es" className="text-zinc-900 bg-white">Español</option>
+                <option value="hi" className="text-zinc-900 bg-white">हिंदी</option>
+                <option value="gu" className="text-zinc-900 bg-white">ગુજરાતી</option>
               </select>
             </div>
             

@@ -13,11 +13,18 @@ interface WeatherData {
 
 export default function FeaturesPage() {
   const { isAuthenticated, openAuthModal } = useAuth();
-  
+
   const [searchInput, setSearchInput] = useState("");
   const [searchOrigin, setSearchOrigin] = useState("New Delhi");
   const [origin, setOrigin] = useState("New Delhi");
-  const [location, setLocation] = useState("Srinagar");
+  const [location, setLocation] = useState("");
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const dest = params.get("destination") || "Srinagar";
+    setLocation(dest);
+    setSearchInput(dest);
+  }, []);
   const [weather, setWeather] = useState<WeatherData | null>(null);
   const [loading, setLoading] = useState(false);
   
@@ -84,6 +91,8 @@ export default function FeaturesPage() {
   };
 
   useEffect(() => {
+    if (!location) return;
+
     async function fetchAllData() {
       setLoading(true);
       setAiLoading(true);

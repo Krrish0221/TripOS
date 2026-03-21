@@ -3,27 +3,50 @@
 import Image from "next/image";
 import { useLanguage } from "@/context/LanguageContext";
 
+import Link from "next/link";
+
 const MOCK_DESTINATIONS = [
   {
     id: 1,
-    name: "Kyoto, Japan",
-    image: "https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?q=80&w=2070&auto=format&fit=crop",
-    descEn: "Experience the tranquility of ancient shrines and vibrant gardens.",
-    descEs: "Experimenta la tranquilidad de los santuarios antiguos y jardines vibrantes."
+    name: "Goa, India",
+    image: "https://images.unsplash.com/photo-1512343879784-a960bf40e7f2?q=80&w=2000&auto=format&fit=crop",
+    descEn: "Sun-kissed beaches, vibrant nightlife, and rich Portuguese heritage.",
+    descEs: "Playas bañadas por el sol, vibrante vida nocturna y rica herencia europea."
   },
   {
     id: 2,
-    name: "Santorini, Greece",
-    image: "https://images.unsplash.com/photo-1613395877344-13d4a8e0d49e?q=80&w=2070&auto=format&fit=crop",
-    descEn: "Stunning sunsets and iconic blue-domed architecture await.",
-    descEs: "Impresionantes atardeceres y la icónica arquitectura de cúpulas azules te esperan."
+    name: "Jaipur, India",
+    image: "https://images.unsplash.com/photo-1477587458883-47145ed94245?q=80&w=2000&auto=format&fit=crop",
+    descEn: "The Pink City famous for majestic palaces and vibrant bazaars.",
+    descEs: "La Ciudad Rosa, famosa por sus majestuosos palacios y vibrantes bazares."
   },
   {
     id: 3,
-    name: "Banff, Canada",
-    image: "https://images.unsplash.com/photo-1549880181-56a44fc4a6ce?q=80&w=2070&auto=format&fit=crop",
-    descEn: "Pristine turquoise lakes set against rugged mountain peaks.",
-    descEs: "Lagos turquesas cristalinos enmarcados por escarpadas montañas."
+    name: "Munnar, Kerala",
+    image: "https://images.unsplash.com/photo-1472214103451-9374bd1c798e?q=80&w=2000&auto=format&fit=crop",
+    descEn: "Rolling emerald tea plantations hidden in the misty Western Ghats.",
+    descEs: "Plantaciones de té esmeraldas ondulantes ocultas en las montañas brumosas."
+  },
+  {
+    id: 4,
+    name: "Varanasi, India",
+    image: "https://images.unsplash.com/photo-1561361513-2d000a50f0dc?q=80&w=2000&auto=format&fit=crop",
+    descEn: "The spiritual capital along the sacred waters of the Ganges River.",
+    descEs: "La capital espiritual a lo largo de las aguas sagradas del río Ganges."
+  },
+  {
+    id: 5,
+    name: "Ladakh, India",
+    image: "https://images.unsplash.com/photo-1581793745862-99fde7fa73d2?q=80&w=2000&auto=format&fit=crop",
+    descEn: "High-altitude deserts, Buddhist monasteries, and crystal blue lakes.",
+    descEs: "Desiertos de gran altitud, monasterios budistas y cristalinos lagos azules."
+  },
+  {
+    id: 6,
+    name: "Agra, India",
+    image: "https://images.unsplash.com/photo-1524492412937-b28074a5d7da?q=80&w=2000&auto=format&fit=crop",
+    descEn: "Home to the glorious Taj Mahal, the ultimate monument to love.",
+    descEs: "Hogar del glorioso Taj Mahal, el monumento definitivo al amor."
   }
 ];
 
@@ -56,9 +79,9 @@ export default function DestinationGrid() {
                   {language === "en" ? dest.descEn : dest.descEs}
                 </p>
               </div>
-              <button className="mt-4 text-left font-semibold text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 transition-colors">
+              <Link href={`/features?destination=${encodeURIComponent(dest.name.split(',')[0])}`} className="mt-4 text-left font-semibold text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 transition-colors">
                 Explore &rarr;
-              </button>
+              </Link>
             </div>
           </div>
         ))}

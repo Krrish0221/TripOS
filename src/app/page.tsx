@@ -8,14 +8,14 @@ export default function Home() {
       <HeroSection />
       
       <div className="container mx-auto px-4 py-16 md:py-24">
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-8 h-full">
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-8 items-start">
           {/* Weather Widget (Feature Section for remote tips) */}
-          <div className="lg:col-span-1 h-full">
+          <div className="lg:col-span-1 sticky top-32">
             <WeatherWidget />
           </div>
           
           {/* Destination Grid Database Placeholder */}
-          <div className="lg:col-span-3 h-full">
+          <div className="lg:col-span-3">
             <DestinationGrid />
           </div>
         </div>

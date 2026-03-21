@@ -9,7 +9,7 @@ import { useAuth } from "@/context/AuthContext";
 
 export default function Navbar() {
   const { language, setLanguage, t } = useLanguage();
-  const { theme, setTheme } = useTheme();
+  const { theme, setTheme, resolvedTheme } = useTheme();
   
   const [mounted, setMounted] = useState(false);
   useEffect(() => setMounted(true), []);
@@ -18,7 +18,7 @@ export default function Navbar() {
   const { isAuthenticated, openAuthModal } = useAuth();
 
   // Toggle helpers
-  const toggleTheme = () => setTheme(theme === "dark" ? "light" : "dark");
+  const toggleTheme = () => setTheme(resolvedTheme === "dark" ? "light" : "dark");
 
   return (
     <nav className="sticky top-0 z-50 w-full backdrop-blur-md bg-white/80 dark:bg-zinc-950/80 border-b border-zinc-200 dark:border-zinc-800 transition-colors duration-300">
@@ -54,8 +54,8 @@ export default function Navbar() {
             </select>
           </div>
           
-          <button onClick={toggleTheme} className="w-10 h-10 flex items-center justify-center rounded-full hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors text-zinc-700 dark:text-zinc-300" aria-label="Toggle Dark Mode" title="Toggle Dark Mode">
-            {mounted ? (theme === "dark" ? <Sun size={18} /> : <Moon size={18} />) : <div className="w-[18px] h-[18px]" />}
+          <button onClick={toggleTheme} className="w-10 h-10 flex items-center justify-center rounded-full hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors text-zinc-700 dark:text-zinc-300" aria-label="Toggle Theme" title="Toggle Theme">
+            {mounted ? (resolvedTheme === "dark" ? <Sun size={18} /> : <Moon size={18} />) : <div className="w-[18px] h-[18px]" />}
           </button>
 
           <div className="border-l border-zinc-300 dark:border-zinc-700 h-5 mx-1" />
@@ -102,8 +102,8 @@ export default function Navbar() {
             </div>
             
             <button onClick={toggleTheme} className="flex flex-col items-center text-sm p-2 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-lg">
-              {mounted ? (theme === "dark" ? <Sun size={24} className="mb-2 text-zinc-500" /> : <Moon size={24} className="mb-2 text-zinc-500" />) : <div className="w-[24px] h-[24px] mb-2" />}
-              <span>{mounted ? (theme === "dark" ? "Light Mode" : "Dark Mode") : "Mode"}</span>
+              {mounted ? (resolvedTheme === "dark" ? <Sun size={24} className="mb-2 text-zinc-500" /> : <Moon size={24} className="mb-2 text-zinc-500" />) : <div className="w-[24px] h-[24px] mb-2" />}
+              <span>{mounted ? (resolvedTheme === "dark" ? "Light Mode" : "Dark Mode") : "Mode"}</span>
             </button>
           </div>
           

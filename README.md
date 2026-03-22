@@ -1,36 +1,62 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 🌍 TripOS
 
-## Getting Started
+TripOS is a next-generation, AI-powered travel and tourism platform designed to revolutionize the way people plan their trips. Built for a hackathon, this platform focuses on accessibility, performance, and delivering highly personalized experiences using state-of-the-art language models and real-time APIs.
 
-First, run the development server:
+## ✨ Key Features
 
-```bash
+*   🧠 **AI-Powered Concierge:** Leverages the Groq API (LLaMA-3) to instantly generate personalized travel themes (Adventure, Relaxing, Photography), dynamic transit estimates, and curated "Must-Visit" spots for any location in the world.
+*   🌐 **Multi-Language Support (i18n):** fully accessible with dynamic, real-time translations for UI elements and AI-generated content in **English, Spanish, Hindi, and Gujarati**.
+*   📡 **Data Saver Mode:** Built for users with limited bandwidth. With the click of a button, heavy interactive map tiles are disabled and replaced with lightweight geographical text summaries powered by the Wikipedia API.
+*   ⛅ **Live Climate Integration:** Fetches real-time weather conditions, temperature, and wind speed dynamically via the Open-Meteo API.
+*   🎨 **Premium UI/UX:** Built with Tailwind CSS v4, featuring a beautiful glassmorphic aesthetic, seamless dark/light mode toggling (`next-themes`), and smooth micro-animations.
+*   👤 **Interactive Dashboards:** Includes a functional Profile dashboard for managing settings, home cities, travel styles, and simulated "Saved Trips", alongside a robust Contact & Support center.
+
+## 🛠️ Technology Stack
+
+*   **Framework:** [Next.js](https://nextjs.org/) (App Router format)
+*   **Styling:** [Tailwind CSS v4](https://tailwindcss.com/)
+*   **Icons:** [Lucide React](https://lucide.dev/)
+*   **AI Backend:** [Groq API](https://console.groq.com/) (llama-3.3-70b-versatile)
+*   **Geocoding & Weather:** [Open-Meteo API](https://open-meteo.com/)
+*   **Geographical Data:** Wikipedia REST API
+
+## 🚀 Getting Started
+
+### 1. Clone the Repository
+\`\`\`bash
+git clone <your-repo-link>
+cd "Travel and Tourism"
+\`\`\`
+
+### 2. Install Dependencies
+Make sure you have Node.js installed, then run:
+\`\`\`bash
+npm install
+\`\`\`
+
+### 3. Environment Variables
+Create a \`.env.local\` file in the root directory and add your Groq API Key required for the AI routing and insights:
+\`\`\`env
+GROQ_API_KEY=your_groq_api_key_here
+\`\`\`
+
+### 4. Run the Development Server
+\`\`\`bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+\`\`\`
+Navigate to [http://localhost:3000](http://localhost:3000) in your browser to explore TripOS.
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## 📂 Project Structure
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+*   **/src/app:** Application routes (Features, Contact, Profile, About).
+*   **/src/actions:** Next.js Server Actions (e.g., \`travel.ts\` for secure Groq API calls).
+*   **/src/components:** Reusable UI components (Navbar, Providers, ProtectedRoute).
+*   **/src/context:** Global State Contexts (\`LanguageContext.tsx\`, \`AuthContext.tsx\`).
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## 💡 What's Next?
+*   Full Database Integration (PostgreSQL / Prisma)
+*   Authentication (NextAuth.js)
+*   Flight and Hotel Booking API integrations
 
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+---
+*Built with ❤️ for the AI Battle.*

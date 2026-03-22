@@ -3,8 +3,10 @@
 import Link from "next/link";
 import { Wifi, Sparkles, Globe, Code2, Paintbrush, Map, Cloud, Cpu, ArrowRight, Github, Linkedin, Mail } from "lucide-react";
 import Image from "next/image";
+import { useLanguage } from "@/context/LanguageContext";
 
 function AboutContent() {
+  const { t } = useLanguage();
   return (
     <div className="min-h-screen bg-zinc-50 dark:bg-[#131315] py-16 px-4 sm:px-6 lg:px-8">
       <div className="max-w-5xl mx-auto space-y-24">
@@ -13,10 +15,10 @@ function AboutContent() {
         <section className="text-center space-y-6 max-w-3xl mx-auto pt-10 relative">
           <div className="absolute top-0 left-1/2 -translate-x-1/2 w-32 h-32 bg-blue-500 rounded-full blur-[100px] opacity-20 pointer-events-none"></div>
           <h1 className="text-5xl md:text-6xl font-black text-zinc-900 dark:text-white tracking-tight relative z-10">
-            About TripOS
+            {t("aboutTitle")}
           </h1>
           <p className="text-xl text-zinc-500 dark:text-zinc-400 font-medium leading-relaxed relative z-10">
-            We are a passionate team dedicated to uncovering the world's most breathtaking destinations. Our platform serves as your ultimate guide to discovering local businesses, planning trips to remote areas, and experiencing the globe like never before.
+            {t("aboutDesc")}
           </p>
         </section>
 
@@ -27,9 +29,9 @@ function AboutContent() {
               <div className="w-14 h-14 bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400 rounded-2xl flex items-center justify-center mb-6">
                 <Wifi size={28} />
               </div>
-              <h3 className="text-2xl font-black text-zinc-900 dark:text-white mb-3">Accessibility First</h3>
+              <h3 className="text-2xl font-black text-zinc-900 dark:text-white mb-3">{t("aboutPillar1Title")}</h3>
               <p className="text-zinc-600 dark:text-zinc-400 font-medium leading-relaxed">
-                Designed for all connections, featuring our ultra-fast Data Saver mode that intelligently strips bandwidth-heavy assets for text-based geographic summaries.
+                {t("aboutPillar1Desc")}
               </p>
             </div>
             
@@ -37,9 +39,9 @@ function AboutContent() {
               <div className="w-14 h-14 bg-purple-100 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400 rounded-2xl flex items-center justify-center mb-6">
                 <Sparkles size={28} />
               </div>
-              <h3 className="text-2xl font-black text-zinc-900 dark:text-white mb-3">AI-Powered Planning</h3>
+              <h3 className="text-2xl font-black text-zinc-900 dark:text-white mb-3">{t("aboutPillar2Title")}</h3>
               <p className="text-zinc-600 dark:text-zinc-400 font-medium leading-relaxed">
-                Smart, dynamic itineraries generated instantly for any destination. Leveraging advanced models for accurate transit estimating and targeted locale curation.
+                {t("aboutPillar2Desc")}
               </p>
             </div>
 
@@ -47,9 +49,9 @@ function AboutContent() {
               <div className="w-14 h-14 bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded-2xl flex items-center justify-center mb-6">
                 <Globe size={28} />
               </div>
-              <h3 className="text-2xl font-black text-zinc-900 dark:text-white mb-3">Localized Discovery</h3>
+              <h3 className="text-2xl font-black text-zinc-900 dark:text-white mb-3">{t("aboutPillar3Title")}</h3>
               <p className="text-zinc-600 dark:text-zinc-400 font-medium leading-relaxed">
-                Uncovering hidden gems and supporting localized businesses worldwide. Explore deeper than the tourist traps with interactive routing and live conditions.
+                {t("aboutPillar3Desc")}
               </p>
             </div>
           </div>
@@ -59,10 +61,9 @@ function AboutContent() {
         <section className="bg-zinc-100 dark:bg-zinc-900/50 rounded-[3rem] p-10 md:p-16 border border-zinc-200 dark:border-zinc-800 relative overflow-hidden">
           <div className="flex flex-col md:flex-row gap-12 items-center relative z-10">
             <div className="flex-1 space-y-6 text-center md:text-left">
-              <h2 className="text-4xl font-black text-zinc-900 dark:text-white">The Tech Under the Hood</h2>
+              <h2 className="text-4xl font-black text-zinc-900 dark:text-white">{t("aboutTechTitle")}</h2>
               <p className="text-lg text-zinc-600 dark:text-zinc-400 font-medium leading-relaxed">
-                TripOS is built with a relentless focus on full-stack optimization and high-performance, open-source-friendly architecture. 
-                Our infrastructure is completely scalable, utilizing Next.js Server Actions to safely orchestrate complex parallel API fetches.
+                {t("aboutTechDesc")}
               </p>
             </div>
             
@@ -102,11 +103,11 @@ function AboutContent() {
               <div className="absolute top-0 right-0 w-32 h-32 bg-indigo-500 rounded-full blur-[80px] opacity-10 pointer-events-none"></div>
               
               <div className="uppercase tracking-widest text-[11px] font-black text-blue-600 dark:text-blue-400 mb-3 border border-blue-200 dark:border-blue-900/50 bg-blue-50 dark:bg-blue-900/20 self-start px-3 py-1 rounded-full">
-                Lead Engineer & Architect
+                {t("aboutLead")}
               </div>
               <h2 className="text-4xl font-black text-zinc-900 dark:text-white mb-6">Krish</h2>
               <p className="text-zinc-600 dark:text-zinc-400 font-medium leading-relaxed mb-8">
-                I am a passionate full-stack developer driven by the desire to engineer intelligent, AI-driven solutions that solve real-world problems. TripOS is a culmination of my obsession with seamless user experiences, deeply accessible web infrastructure, and scalable, futuristic web architectures.
+                {t("aboutCreatorDesc")}
               </p>
               
               <div className="flex items-center gap-3">
@@ -126,15 +127,15 @@ function AboutContent() {
 
         {/* 4. Call to Action */}
         <section className="text-center py-12 md:py-24 relative">
-          <h2 className="text-4xl md:text-5xl font-black text-zinc-900 dark:text-white mb-6 tracking-tight">Ready to test the engine?</h2>
+          <h2 className="text-4xl md:text-5xl font-black text-zinc-900 dark:text-white mb-6 tracking-tight">{t("aboutReady")}</h2>
           <p className="text-lg text-zinc-500 dark:text-zinc-400 font-medium max-w-xl mx-auto mb-10 leading-relaxed">
-            Head over to the Trip Planner. Search for a destination, toggle the Data Saver, and let our AI calculate your routes and curate your top spots instantly.
+            {t("aboutReadyDesc")}
           </p>
           <Link 
             href="/features" 
             className="inline-flex items-center gap-3 bg-zinc-900 text-white dark:bg-white dark:text-zinc-900 px-10 py-5 rounded-[2rem] font-black text-lg hover:opacity-90 hover:scale-105 active:scale-95 transition-all shadow-xl dark:shadow-white/10"
           >
-            Start Your Journey <ArrowRight size={22} className="text-blue-500" />
+            {t("aboutStartBtn")} <ArrowRight size={22} className="text-blue-500" />
           </Link>
         </section>
 

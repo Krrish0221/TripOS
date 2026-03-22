@@ -1,6 +1,6 @@
 "use server";
 
-export async function generateTravelGuide(location: string, theme: string = "general highlights") {
+export async function generateTravelGuide(location: string, theme: string = "general highlights", language: string = "en") {
   const apiKey = process.env.GROQ_API_KEY;
   if (!apiKey) {
     return "API key missing. • Add an API key directly in .env.local • Restart the development server.";
@@ -18,7 +18,7 @@ export async function generateTravelGuide(location: string, theme: string = "gen
         messages: [
           {
             role: "system",
-            content: `You are an expert travel concierge specializing in ${theme}. Provide exactly three bullet points of the top must-do activities or hidden gems for a traveler interested in ${theme}. Keep each bullet point short, exciting, and under 15 words. Do not include any introductory or concluding text.`
+            content: `You are an expert travel concierge specializing in ${theme}. Provide exactly three bullet points of the top must-do activities or hidden gems for a traveler interested in ${theme}. Keep each bullet point short, exciting, and under 15 words. Do not include any introductory or concluding text. Respond STRICTLY in language code: ${language}.`
           },
           {
             role: "user",
@@ -44,7 +44,7 @@ export async function generateTravelGuide(location: string, theme: string = "gen
   }
 }
 
-export async function generateTransitEstimates(origin: string, destination: string) {
+export async function generateTransitEstimates(origin: string, destination: string, language: string = "en") {
   const apiKey = process.env.GROQ_API_KEY;
   if (!apiKey) return null;
 
@@ -61,7 +61,7 @@ export async function generateTransitEstimates(origin: string, destination: stri
         messages: [
           {
             role: "system",
-            content: "You are a routing estimator. The user will provide an origin and destination. You MUST output a JSON object containing exactly three keys: 'flight', 'train', and 'road'. Each key must map to an object with 'time' (string) and 'cost' (string) properties giving rough travel time and cost estimates for that route. Output ONLY valid JSON."
+            content: `You are a routing estimator. The user will provide an origin and destination. You MUST output a JSON object containing exactly three keys: 'flight', 'train', and 'road'. Each key must map to an object with 'time' (string) and 'cost' (string) properties giving rough travel time and cost estimates for that route. Output ONLY valid JSON. The strings for 'time' and 'cost' MUST be localized in language code: ${language}.`
           },
           {
             role: "user",
@@ -85,7 +85,7 @@ export async function generateTransitEstimates(origin: string, destination: stri
   }
 }
 
-export async function generateTopSpots(destination: string) {
+export async function generateTopSpots(destination: string, language: string = "en") {
   const apiKey = process.env.GROQ_API_KEY;
   if (!apiKey) return [];
 
@@ -102,7 +102,7 @@ export async function generateTopSpots(destination: string) {
         messages: [
           {
             role: "system",
-            content: "You are a trip planner. The user will provide a destination. Output a JSON object containing a 'spots' array. Each item in the array must be an object with three string properties: 'title' (name of place), 'time' (e.g. '2 Hours'), and 'desc' (a short 4-word description). Provide exactly 4 highly distinct spots. Output ONLY valid JSON."
+            content: `You are a trip planner. The user will provide a destination. Output a JSON object containing a 'spots' array. Each item in the array must be an object with three string properties: 'title' (name of place), 'time' (e.g. '2 Hours'), and 'desc' (a short 4-word description). Provide exactly 4 highly distinct spots. Output ONLY valid JSON. All text in 'title', 'time', and 'desc' MUST be localized in language code: ${language}.`
           },
           {
             role: "user",

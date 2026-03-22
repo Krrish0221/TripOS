@@ -13,9 +13,9 @@ function ProfileContent() {
 
   // Simulated Database User Data
   const [userData, setUserData] = useState({
-    name: "Alex Explorer",
-    email: "alex@example.com",
-    city: "Mumbai, India",
+    name: "Krish",
+    email: "krish@gmai.com",
+    city: "Ahmedabad, Gujarat, India",
     travelStyle: "Adventure & Photography",
   });
 
@@ -33,7 +33,7 @@ function ProfileContent() {
   return (
     <div className="min-h-screen bg-zinc-50 dark:bg-zinc-950/50 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-6xl mx-auto space-y-8">
-        
+
         {/* Header Section */}
         <div className="bg-white dark:bg-[#131315] rounded-[2rem] p-8 md:p-10 shadow-sm border border-zinc-200 dark:border-zinc-800/50 flex flex-col md:flex-row items-center justify-between gap-6">
           <div className="flex items-center gap-6">
@@ -49,8 +49,8 @@ function ProfileContent() {
               </p>
             </div>
           </div>
-          
-          <button 
+
+          <button
             className="flex items-center gap-2 px-6 py-3 bg-zinc-100 hover:bg-zinc-200 dark:bg-zinc-800 dark:hover:bg-zinc-700 text-zinc-900 dark:text-white rounded-full font-bold transition-colors"
             onClick={() => window.location.href = "/"} // Temporary signout simulation
           >
@@ -65,10 +65,10 @@ function ProfileContent() {
           </div>
         ) : (
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            
+
             {/* Left Column: Personal Info & Settings */}
             <div className="space-y-8">
-              
+
               {/* Demographics Card */}
               <div className="bg-white dark:bg-[#131315] rounded-[2rem] p-8 shadow-sm border border-zinc-200 dark:border-zinc-800/50">
                 <h3 className="text-xl font-bold text-zinc-900 dark:text-white mb-6 flex items-center gap-2">
@@ -79,10 +79,10 @@ function ProfileContent() {
                     <label className="block text-sm font-semibold text-zinc-500 dark:text-zinc-400 mb-1">Home City</label>
                     <div className="flex items-center gap-3 bg-zinc-50 dark:bg-zinc-800/50 px-4 py-3 rounded-xl border border-zinc-200 dark:border-zinc-700/50">
                       <MapPin size={18} className="text-zinc-400" />
-                      <input 
-                        type="text" 
+                      <input
+                        type="text"
                         value={userData.city}
-                        onChange={(e) => setUserData({...userData, city: e.target.value})}
+                        onChange={(e) => setUserData({ ...userData, city: e.target.value })}
                         className="bg-transparent border-none outline-none w-full font-medium text-zinc-900 dark:text-white"
                       />
                     </div>
@@ -91,10 +91,10 @@ function ProfileContent() {
                     <label className="block text-sm font-semibold text-zinc-500 dark:text-zinc-400 mb-1">Travel Style</label>
                     <div className="flex items-center gap-3 bg-zinc-50 dark:bg-zinc-800/50 px-4 py-3 rounded-xl border border-zinc-200 dark:border-zinc-700/50">
                       <Compass size={18} className="text-zinc-400" />
-                      <input 
-                        type="text" 
+                      <input
+                        type="text"
                         value={userData.travelStyle}
-                        onChange={(e) => setUserData({...userData, travelStyle: e.target.value})}
+                        onChange={(e) => setUserData({ ...userData, travelStyle: e.target.value })}
                         className="bg-transparent border-none outline-none w-full font-medium text-zinc-900 dark:text-white"
                       />
                     </div>
@@ -118,7 +118,7 @@ function ProfileContent() {
                       <p className="text-xs text-zinc-500">Saved to your profile</p>
                     </div>
                   </div>
-                  <button 
+                  <button
                     onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
                     className="px-4 py-2 bg-zinc-200 dark:bg-zinc-700 text-zinc-900 dark:text-white text-sm font-bold rounded-lg hover:bg-zinc-300 dark:hover:bg-zinc-600 transition-colors"
                   >
@@ -131,7 +131,7 @@ function ProfileContent() {
 
             {/* Right Column: Dynamic Data (Trips & History) */}
             <div className="lg:col-span-2 space-y-8">
-              
+
               {/* Saved Itineraries */}
               <div className="bg-white dark:bg-[#131315] rounded-[2rem] p-8 shadow-sm border border-zinc-200 dark:border-zinc-800/50">
                 <div className="flex items-center justify-between mb-6">
@@ -142,14 +142,14 @@ function ProfileContent() {
                     2 Trips
                   </span>
                 </div>
-                
+
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   {/* Trip Card 1 */}
                   <div className="group relative rounded-2xl overflow-hidden border border-zinc-200 dark:border-zinc-800/50 hover:shadow-lg transition-all">
                     <div className="aspect-video relative bg-zinc-200 dark:bg-zinc-800">
-                      <Image 
-                        src="https://images.unsplash.com/photo-1595815771614-ade9d652a65d?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" 
-                        alt="Winter in Kashmir" 
+                      <Image
+                        src="https://images.unsplash.com/photo-1595815771614-ade9d652a65d?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
+                        alt="Winter in Kashmir"
                         fill
                         className="object-cover group-hover:scale-105 transition-transform duration-500"
                       />
@@ -165,9 +165,9 @@ function ProfileContent() {
                   {/* Trip Card 2 */}
                   <div className="group relative rounded-2xl overflow-hidden border border-zinc-200 dark:border-zinc-800/50 hover:shadow-lg transition-all">
                     <div className="aspect-video relative bg-zinc-200 dark:bg-zinc-800">
-                      <Image 
-                        src="https://images.unsplash.com/photo-1512343879784-a960bf40e7f2?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" 
-                        alt="Goa Beaches" 
+                      <Image
+                        src="https://images.unsplash.com/photo-1512343879784-a960bf40e7f2?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"
+                        alt="Goa Beaches"
                         fill
                         className="object-cover group-hover:scale-105 transition-transform duration-500"
                       />
@@ -187,7 +187,7 @@ function ProfileContent() {
                 <h3 className="text-xl font-bold text-zinc-900 dark:text-white mb-6 flex items-center gap-2">
                   <History size={20} className="text-blue-500" /> Support & Feedback History
                 </h3>
-                
+
                 <div className="space-y-4">
                   {/* History Item */}
                   <div className="bg-zinc-50 dark:bg-zinc-800/30 rounded-2xl p-5 border border-zinc-200 dark:border-zinc-700/50">
